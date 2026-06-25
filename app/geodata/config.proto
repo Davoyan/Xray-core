@@ -18,4 +18,6 @@ message Config {
   string outbound = 2;
 
   repeated Asset assets = 3;
+	 
+  string fingerprint = 4;
 }

@@ -18,6 +18,7 @@ import (
 	"github.com/xtls/xray-core/common/utils"
 	"github.com/xtls/xray-core/features/routing"
 	"github.com/xtls/xray-core/transport/internet/tagged"
+	xtls "github.com/xtls/xray-core/transport/internet/tls"
 	"golang.org/x/net/http2"
 )
 
@@ -55,15 +56,15 @@ func (c *idleConn) Write(b []byte) (int, error) {
 	return c.Conn.Write(b)
 }
 
-func newDownloader(ctx context.Context, dispatcher routing.Dispatcher, outbound string) *downloader {
+func newDownloader(ctx context.Context, dispatcher routing.Dispatcher, outbound string, fingerprint string) *downloader {
 	return &downloader{
 		ctx:         ctx,
-		httpClient:  newClient(ctx, dispatcher, outbound, false),
-		httpsClient: newClient(ctx, dispatcher, outbound, true),
+		httpClient:  newClient(ctx, dispatcher, outbound, fingerprint, false),
+		httpsClient: newClient(ctx, dispatcher, outbound, fingerprint, true),
 	}
 }
 
-func newClient(baseCtx context.Context, dispatcher routing.Dispatcher, outbound string, isHTTPS bool) *http.Client {
+func newClient(baseCtx context.Context, dispatcher routing.Dispatcher, outbound string, fingerprint string, isHTTPS bool) *http.Client {
 	dial := func(ctx context.Context, network, address string) (net.Conn, error) {
 		var conn net.Conn
 		err := task.Run(ctx, func() error {
@@ -97,7 +98,10 @@ func newClient(baseCtx context.Context, dispatcher routing.Dispatcher, outbound 
 						return nil, err
 					}
 					host, _, _ := net.SplitHostPort(address)
-					tlsConn := utls.UClient(conn, &utls.Config{ServerName: host}, utls.HelloChrome_Auto)
+					tlsConn := xtls.UClient(conn, &tls.Config{
+						ServerName: host,
+						NextProtos: []string{"h2"},
+					}, xtls.GetFingerprint(fingerprint))
 					handshakeCtx, cancel := context.WithTimeout(ctx, idleTimeout)
 					defer cancel()
 					if err := tlsConn.HandshakeContext(handshakeCtx); err != nil {

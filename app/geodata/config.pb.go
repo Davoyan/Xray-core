@@ -78,6 +78,7 @@ type Config struct {
 	Cron          string                 `protobuf:"bytes,1,opt,name=cron,proto3" json:"cron,omitempty"`
 	Outbound      string                 `protobuf:"bytes,2,opt,name=outbound,proto3" json:"outbound,omitempty"`
 	Assets        []*Asset               `protobuf:"bytes,3,rep,name=assets,proto3" json:"assets,omitempty"`
+	Fingerprint   string                 `protobuf:"bytes,4,opt,name=fingerprint,proto3" json:"fingerprint,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -133,6 +134,13 @@ func (x *Config) GetAssets() []*Asset {
 	return nil
 }
 
+func (x *Config) GetFingerprint() string {
+	if x != nil {
+		return x.Fingerprint
+	}
+	return ""
+}
+
 var File_app_geodata_config_proto protoreflect.FileDescriptor
 
 const file_app_geodata_config_proto_rawDesc = "" +
@@ -140,11 +148,12 @@ const file_app_geodata_config_proto_rawDesc = "" +
 	"\x18app/geodata/config.proto\x12\x10xray.app.geodata\"-\n" +
 	"\x05Asset\x12\x10\n" +
 	"\x03url\x18\x01 \x01(\tR\x03url\x12\x12\n" +
-	"\x04file\x18\x02 \x01(\tR\x04file\"i\n" +
+	"\x04file\x18\x02 \x01(\tR\x04file\"\x8b\x01\n" +
 	"\x06Config\x12\x12\n" +
 	"\x04cron\x18\x01 \x01(\tR\x04cron\x12\x1a\n" +
 	"\boutbound\x18\x02 \x01(\tR\boutbound\x12/\n" +
-	"\x06assets\x18\x03 \x03(\v2\x17.xray.app.geodata.AssetR\x06assetsBR\n" +
+	"\x06assets\x18\x03 \x03(\v2\x17.xray.app.geodata.AssetR\x06assets\x12 \n" +
+	"\vfingerprint\x18\x04 \x01(\tR\vfingerprintBR\n" +
 	"\x14com.xray.app.geodataP\x01Z%github.com/xtls/xray-core/app/geodata\xaa\x02\x10Xray.App.Geodatab\x06proto3"
 
 var (

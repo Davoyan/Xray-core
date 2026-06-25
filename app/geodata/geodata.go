@@ -13,9 +13,10 @@ import (
 )
 
 type Instance struct {
-	assets     []*Asset
-	downloader *downloader
-	tasker     *cron.Cron
+	assets      []*Asset
+	downloader  *downloader
+	tasker      *cron.Cron
+	fingerprint string
 
 	mu      sync.Mutex
 	running bool
@@ -37,7 +38,7 @@ func New(ctx context.Context, config *Config) (*Instance, error) {
 		}); err != nil {
 			return nil, errors.New("failed to get dispatcher for geodata downloader").Base(err)
 		}
-		g.downloader = newDownloader(ctx, dispatcher, config.Outbound)
+		g.downloader = newDownloader(ctx, dispatcher, config.Outbound, config.Fingerprint)
 	}
 
 	g.tasker = cron.New(
